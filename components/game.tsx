@@ -80,11 +80,15 @@ function Game (): JSX.Element {
 
   return (
     <div>
-      <canvas id="game" ref={canvas} />
+      <canvas id='game' ref={canvas} />
       <br />
-      <button onClick={() => {
-        setRendering(!rendering)
-      }}>Toggle rendering, current: {JSON.stringify(rendering)}</button>
+      <button
+        onClick={() => {
+          setRendering(!rendering)
+        }}
+      >
+        Toggle rendering, current: {JSON.stringify(rendering)}
+      </button>
     </div>
   )
 }
