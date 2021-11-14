@@ -1,0 +1,19 @@
+@use "styles/variables/colors" as colors;
+@use "styles/variables/typography" as typography;
+
+.layout {
+  background: colors.$background;
+  color: colors.$font;
+  font-family: typography.$font-family;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  text-align: center;
+
+  > section {
+    text-align: left;
+  }
+}

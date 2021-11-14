@@ -1,0 +1,30 @@
+{
+  "name": "open-assault",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FalcoG/open-assault.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/FalcoG/open-assault/issues"
+  },
+  "homepage": "https://github.com/FalcoG/open-assault#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "next": "^12.0.3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "sass": "^1.43.4"
+  },
+  "devDependencies": {
+    "standard": "^16.0.4"
+  }
+}

@@ -1,0 +1,20 @@
+@use "variables/colors" as colors;
+@use "variables/typography" as typography;
+@use "variables/dimensions" as dimensions;
+
+body {
+  margin: 0;
+}
+
+a {
+  color: colors.$link-new;
+
+  &:hover,
+  &:visited {
+    color: colors.$link-visited;
+  }
+}
+
+sub {
+  color: colors.$font-subtle;
+}

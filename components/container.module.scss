@@ -1,0 +1,6 @@
+@use "styles/variables/dimensions" as dimensions;
+
+.container {
+  max-width: dimensions.$content-width;
+  margin: 0 auto;
+}
