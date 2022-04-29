@@ -1,8 +1,9 @@
+import React from 'react'
 import Head from 'next/head'
 import '../styles/core.scss'
 import { siteTitle } from '../components/layout'
 
-export default function App ({ Component, pageProps }) {
+export default function App ({ Component, pageProps }): React.ReactNode {
   return (
     <>
       <Head>

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import styles from './header.module.scss'
 import Container from './container'
 
-export default function Header () {
+export default function Header (): JSX.Element {
   return (
     <header className={styles.header}>
       <Container>

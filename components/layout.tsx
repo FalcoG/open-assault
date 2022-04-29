@@ -1,3 +1,4 @@
+import React from 'react'
 import Head from 'next/head'
 import Header from './header'
 import Footer from './footer'
@@ -5,7 +6,7 @@ import styles from './layout.module.scss'
 
 export const siteTitle = 'Open Assault'
 
-export default function Layout ({ children, home }) {
+export default function Layout ({ children }: { children: React.ReactNode}): JSX.Element {
   return (
     <div className={styles.layout}>
       <Head>
