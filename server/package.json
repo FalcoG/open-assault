@@ -1,0 +1,6 @@
+{
+  "name": "open-assault-server",
+  "scripts": {
+    "server": "echo \"UNIMPLEMENTED\""
+  }
+}

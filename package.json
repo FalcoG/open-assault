@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "npm run --workspace open-assault-client dev",
+    "build": "npm run --workspace open-assault-client build",
+    "start": "npm run --workspace open-assault-client start",
+    "server": "npm run --workspace open-assault-server server"
   },
+  "workspaces": [
+    "./client",
+    "./server"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/FalcoG/open-assault.git"
@@ -18,12 +23,7 @@
   },
   "homepage": "https://github.com/FalcoG/open-assault#readme",
   "dependencies": {
-    "dotenv": "^16.0.0",
-    "next": "^12.0.3",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "sass": "^1.43.4",
-    "three": "^0.139.2"
+    "dotenv": "^16.0.0"
   },
   "devDependencies": {
     "@tsconfig/next": "^1.0.1",
