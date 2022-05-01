@@ -1,0 +1,12 @@
+@use "../../styles/variables/colors" as colors;
+
+.chat {
+  max-height: 20vh;
+  width: 20vw;
+  overflow-y: scroll;
+  position: fixed;
+  bottom: 1em;
+  left: 1em;
+  background: colors.$background-menu;
+  text-align: left;
+}

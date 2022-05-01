@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 
+import Chat from './game/chat'
+
 function Game (): JSX.Element {
   const canvas = useRef<HTMLCanvasElement>(null)
   const renderRef = useRef<null | number>(null)
@@ -131,6 +133,8 @@ function Game (): JSX.Element {
         Toggle rendering, current: {JSON.stringify(rendering)}
       </button>
       Pointer lock: {JSON.stringify(pointerLock)}
+
+      <Chat />
     </div>
   )
 }
