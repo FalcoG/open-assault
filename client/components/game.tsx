@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 
 function Game (): JSX.Element {
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -11,6 +12,9 @@ function Game (): JSX.Element {
   const [scene, setScene] = useState<THREE.Scene>()
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>()
   const [testCube, setTestCube] = useState<THREE.Mesh>()
+
+  const [pointerControls, setPointerControls] = useState<PointerLockControls | undefined>()
+  const [pointerLock, setPointerLock] = useState<boolean>(false)
 
   useEffect(() => {
     if (canvas.current == null) return
@@ -50,6 +54,39 @@ function Game (): JSX.Element {
     setRendering(true)
   }, [canvas])
 
+  /**
+   * Pointer lock register & handler
+   */
+  useEffect(() => {
+    if (camera == null) {
+      if (pointerControls != null) {
+        pointerControls.dispose()
+      }
+
+      return
+    }
+    const controls = new PointerLockControls(camera as THREE.Camera, document.body)
+
+    setPointerControls(controls)
+
+    controls.addEventListener('lock', function () {
+      setPointerLock(true)
+    })
+
+    controls.addEventListener('unlock', function () {
+      setPointerLock(false)
+    })
+  }, [camera])
+
+  /**
+   * Pointer lock request by user
+   */
+  const requestPointerLock = (): void => {
+    if (!pointerLock && pointerControls != null) {
+      pointerControls.lock()
+    }
+  }
+
   useEffect(() => {
     console.log('useEffect anim frame', renderer, rendering)
 
@@ -80,7 +117,11 @@ function Game (): JSX.Element {
 
   return (
     <div>
-      <canvas id='game' ref={canvas} />
+      <canvas
+        id='game' ref={canvas} onClick={() => {
+          requestPointerLock()
+        }}
+      />
       <br />
       <button
         onClick={() => {
@@ -89,6 +130,7 @@ function Game (): JSX.Element {
       >
         Toggle rendering, current: {JSON.stringify(rendering)}
       </button>
+      Pointer lock: {JSON.stringify(pointerLock)}
     </div>
   )
 }
