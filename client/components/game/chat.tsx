@@ -1,36 +1,42 @@
-import { useEffect, useLayoutEffect, useState, useRef } from 'react'
+import { useEffect, useLayoutEffect, useState, useRef, useContext } from 'react'
 
 import styles from './chat.module.scss'
+import { NetworkContext } from '../../lib/game/networking'
 
 const Chat = (): JSX.Element => {
-  const [socket, setSocket] = useState<WebSocket>()
+  const { ws } = useContext(NetworkContext)
+
   const [messages, setMessages] = useState<string[]>([])
   const chatBox = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setSocket(new WebSocket('ws://localhost:8080'))
-  }, [])
-
-  useEffect(() => {
-    if (socket == null) return
+    if (ws == null) return
 
     const openConnection = (event): void => {
-      socket.send('Hello Server!')
+      ws.send('Hello Server!')
+      addMessage(`Connected to ${ws.url}`)
     }
 
     const messageEvent = (event): void => {
       console.log('Message from server ', event.data)
-      setMessages([...messages, event.data])
+      addMessage(event.data)
     }
 
-    socket.addEventListener('open', openConnection)
-    socket.addEventListener('message', messageEvent)
+    ws.addEventListener('open', openConnection)
+    ws.addEventListener('message', messageEvent)
 
+    // TODO: fix timing issue!
     return () => { // this will cause a re-register of event listeners with every disconnect of the effect - can this be optimized?
-      socket.removeEventListener('open', openConnection)
-      socket.removeEventListener('message', messageEvent)
+      console.log('unregister effect')
+      ws.removeEventListener('open', openConnection)
+      ws.removeEventListener('message', messageEvent)
     }
-  }, [socket, messages])
+  }, [ws, messages])
+
+  const addMessage = (message): void => {
+    console.log('prev messages state', messages)
+    setMessages([...messages, message])
+  }
 
   useLayoutEffect(() => {
     if ((chatBox?.current) != null) {

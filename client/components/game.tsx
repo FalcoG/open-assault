@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import * as THREE from 'three'
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 
 import Chat from './game/chat'
+import PointerLock from './game/pointer-lock'
+
+import { NetworkContext } from '../lib/game/networking'
 
 function Game (): JSX.Element {
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -12,11 +14,12 @@ function Game (): JSX.Element {
   const [rendering, setRendering] = useState(false)
 
   const [scene, setScene] = useState<THREE.Scene>()
-  const [camera, setCamera] = useState<THREE.PerspectiveCamera>()
+  const [camera, setCamera] = useState<THREE.Camera>()
   const [testCube, setTestCube] = useState<THREE.Mesh>()
 
-  const [pointerControls, setPointerControls] = useState<PointerLockControls | undefined>()
   const [pointerLock, setPointerLock] = useState<boolean>(false)
+
+  const [socket, setSocket] = useState<WebSocket>()
 
   useEffect(() => {
     if (canvas.current == null) return
@@ -56,39 +59,6 @@ function Game (): JSX.Element {
     setRendering(true)
   }, [canvas])
 
-  /**
-   * Pointer lock register & handler
-   */
-  useEffect(() => {
-    if (camera == null) {
-      if (pointerControls != null) {
-        pointerControls.dispose()
-      }
-
-      return
-    }
-    const controls = new PointerLockControls(camera as THREE.Camera, document.body)
-
-    setPointerControls(controls)
-
-    controls.addEventListener('lock', function () {
-      setPointerLock(true)
-    })
-
-    controls.addEventListener('unlock', function () {
-      setPointerLock(false)
-    })
-  }, [camera])
-
-  /**
-   * Pointer lock request by user
-   */
-  const requestPointerLock = (): void => {
-    if (!pointerLock && pointerControls != null) {
-      pointerControls.lock()
-    }
-  }
-
   useEffect(() => {
     console.log('useEffect anim frame', renderer, rendering)
 
@@ -117,13 +87,25 @@ function Game (): JSX.Element {
     }
   }, [renderer, rendering, testCube])
 
+  useEffect(() => {
+    setSocket(new WebSocket('ws://localhost:8080'))
+  }, [])
+
   return (
-    <div>
+    <NetworkContext.Provider value={{ connected: true, ws: socket }}>
       <canvas
         id='game' ref={canvas} onClick={() => {
-          requestPointerLock()
+          setPointerLock(true)
         }}
       />
+      {camera != null &&
+        <PointerLock
+          lock={pointerLock}
+          lockChange={(active) => {
+            setPointerLock(active)
+          }}
+          camera={camera}
+        />}
       <br />
       <button
         onClick={() => {
@@ -135,7 +117,7 @@ function Game (): JSX.Element {
       Pointer lock: {JSON.stringify(pointerLock)}
 
       <Chat />
-    </div>
+    </NetworkContext.Provider>
   )
 }
 
