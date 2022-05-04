@@ -25,20 +25,20 @@ const Chat = (): JSX.Element => {
     ws.addEventListener('open', openConnection)
     ws.addEventListener('message', messageEvent)
 
-    // TODO: fix timing issue!
     return () => { // this will cause a re-register of event listeners with every disconnect of the effect - can this be optimized?
       console.log('unregister effect')
       ws.removeEventListener('open', openConnection)
       ws.removeEventListener('message', messageEvent)
     }
-  }, [ws, messages])
+  }, [ws])
 
   const addMessage = (message): void => {
-    console.log('prev messages state', messages)
-    setMessages([...messages, message])
+    setMessages((prevState) => {
+      return [...prevState, message]
+    })
   }
 
-  useLayoutEffect(() => {
+  typeof window !== 'undefined' && useLayoutEffect(() => {
     if ((chatBox?.current) != null) {
       chatBox.current.scrollTop = chatBox.current.scrollHeight
     }
