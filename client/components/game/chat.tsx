@@ -12,23 +12,27 @@ const Chat = (): JSX.Element => {
   useEffect(() => {
     if (ws == null) return
 
-    const openConnection = (event): void => {
+    const openConnection = (): void => {
       ws.send('Hello Server!')
       addMessage(`Connected to ${ws.url}`)
     }
 
     const messageEvent = (event): void => {
-      console.log('Message from server ', event.data)
-      addMessage(event.data)
+      const packet = event.detail
+
+      if (packet.type !== 'message') return
+
+      console.log('Message from server ', packet.data)
+      addMessage(packet.data)
     }
 
     ws.addEventListener('open', openConnection)
-    ws.addEventListener('message', messageEvent)
+    ws.addEventListener('packet', messageEvent)
 
     return () => { // this will cause a re-register of event listeners with every disconnect of the effect - can this be optimized?
       console.log('unregister effect')
       ws.removeEventListener('open', openConnection)
-      ws.removeEventListener('message', messageEvent)
+      ws.removeEventListener('packet', messageEvent)
     }
   }, [ws])
 

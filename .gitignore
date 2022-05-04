@@ -105,3 +105,6 @@ dist
 
 # JetBrains
 .idea/
+
+# Full TypeScript enforcement!
+*.js

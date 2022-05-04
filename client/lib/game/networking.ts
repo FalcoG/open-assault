@@ -1,6 +1,6 @@
 import React from 'react'
 
 export const NetworkContext = React.createContext<{
-  connected: boolean
+  uuid?: string
   ws?: WebSocket
-}>({ connected: false, ws: undefined })
+}>({ ws: undefined })
