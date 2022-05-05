@@ -2,12 +2,17 @@ import { useEffect, useLayoutEffect, useState, useRef, useContext } from 'react'
 
 import styles from './chat.module.scss'
 import { NetworkContext } from '../../lib/game/networking'
+import keybinds from '../../lib/keybinds'
 
 const Chat = (): JSX.Element => {
   const { ws } = useContext(NetworkContext)
 
   const [messages, setMessages] = useState<string[]>([])
+  const [chatInputActive, setChatInputActive] = useState<boolean>(false)
+  const [chatInput, setChatInput] = useState<string>('')
+
   const chatBox = useRef<HTMLDivElement>(null)
+  const chatInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (ws == null) return
@@ -36,10 +41,32 @@ const Chat = (): JSX.Element => {
     }
   }, [ws])
 
+  useEffect(() => {
+    const keyPress = (e): void => {
+      if (e.key === keybinds.chat_open) {
+        setChatInputActive(true)
+      }
+    }
+
+    document.addEventListener('keypress', keyPress)
+
+    return () => {
+      document.removeEventListener('keypress', keyPress)
+    }
+  })
+
   const addMessage = (message): void => {
     setMessages((prevState) => {
       return [...prevState, message]
     })
+  }
+
+  const sendChatMessage = (event): void => {
+    event.preventDefault()
+    if (ws == null) return
+    ws.send(chatInput)
+    setChatInputActive(false)
+    setChatInput('')
   }
 
   typeof window !== 'undefined' && useLayoutEffect(() => {
@@ -48,11 +75,25 @@ const Chat = (): JSX.Element => {
     }
   }, [messages])
 
+  typeof window !== 'undefined' && useLayoutEffect(() => {
+    if (chatInputActive) chatInputRef.current?.focus()
+  }, [chatInputActive])
+
   return (
     <div className={styles.chat} ref={chatBox}>
       <ul>
         {(messages.length > 0) && messages.map((message, index) => <li key={index}>{message}</li>)}
       </ul>
+      {chatInputActive && (
+        <form onSubmit={sendChatMessage}>
+          <input
+            type='text' name='chat-input' autoComplete='off'
+            value={chatInput}
+            onChange={(e) => { setChatInput(e.target.value) }}
+            ref={chatInputRef}
+          />
+        </form>
+      )}
     </div>
   )
 }
