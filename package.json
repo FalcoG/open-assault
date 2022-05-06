@@ -10,7 +10,8 @@
   },
   "workspaces": [
     "./client",
-    "./server"
+    "./server",
+    "./core"
   ],
   "repository": {
     "type": "git",
@@ -26,7 +27,7 @@
     "dotenv": "^16.0.0"
   },
   "devDependencies": {
-    "@tsconfig/next": "^1.0.1",
+    "@tsconfig/next": "^1.0.2",
     "@types/node": "^17.0.30",
     "@types/react": "^18.0.8",
     "@types/three": "^0.139.0",

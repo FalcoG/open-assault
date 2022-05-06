@@ -1,12 +1,27 @@
 @use "../../styles/variables/colors" as colors;
 
+$offset: 1em;
+
 .chat {
-  max-height: 20vh;
   width: 20vw;
-  overflow-y: scroll;
   position: fixed;
-  bottom: 1em;
-  left: 1em;
+  bottom: $offset;
+  left: $offset;
   background: colors.$background-menu;
   text-align: left;
+  padding: .5em;
+}
+
+.chatMessages {
+  max-height: 20vh;
+  overflow-y: scroll;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.chatInput {
+  box-sizing: border-box;
+  margin-top: .5em;
+  width: 100%;
 }

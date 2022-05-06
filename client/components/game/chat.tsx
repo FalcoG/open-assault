@@ -11,7 +11,7 @@ const Chat = (): JSX.Element => {
   const [chatInputActive, setChatInputActive] = useState<boolean>(false)
   const [chatInput, setChatInput] = useState<string>('')
 
-  const chatBox = useRef<HTMLDivElement>(null)
+  const chatBox = useRef<HTMLUListElement>(null)
   const chatInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const Chat = (): JSX.Element => {
     const messageEvent = (event): void => {
       const packet = event.detail
 
-      if (packet.type !== 'message') return
+      if (packet.type !== 'chatMessage') return
 
       console.log('Message from server ', packet.data)
       addMessage(packet.data)
@@ -80,8 +80,8 @@ const Chat = (): JSX.Element => {
   }, [chatInputActive])
 
   return (
-    <div className={styles.chat} ref={chatBox}>
-      <ul>
+    <div className={styles.chat}>
+      <ul className={styles.chatMessages} ref={chatBox}>
         {(messages.length > 0) && messages.map((message, index) => <li key={index}>{message}</li>)}
       </ul>
       {chatInputActive && (
@@ -90,7 +90,9 @@ const Chat = (): JSX.Element => {
             type='text' name='chat-input' autoComplete='off'
             value={chatInput}
             onChange={(e) => { setChatInput(e.target.value) }}
+            onBlur={(e) => { setChatInputActive(false) }}
             ref={chatInputRef}
+            className={styles.chatInput}
           />
         </form>
       )}
