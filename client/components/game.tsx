@@ -21,6 +21,7 @@ function Game (): JSX.Element {
   const [pointerLock, setPointerLock] = useState<boolean>(false)
 
   const [socket, setSocket] = useState<WebSocket>()
+  const [networkEventDispatch] = useState(new EventTarget())
 
   useEffect(() => {
     if (canvas.current == null) return
@@ -98,7 +99,8 @@ function Game (): JSX.Element {
     const packetHandler = (message: any): void => {
       try {
         const parsed = JSON.parse(message.data)
-        socket.dispatchEvent(new CustomEvent('packet', { detail: parsed }))
+
+        networkEventDispatch.dispatchEvent(new CustomEvent(parsed.type, { detail: parsed }))
       } catch (e) {
         console.log('Malformed server packet', message)
       }
@@ -112,7 +114,7 @@ function Game (): JSX.Element {
   }, [socket])
 
   return (
-    <NetworkContext.Provider value={{ ws: socket }}>
+    <NetworkContext.Provider value={{ ws: socket, eventDispatch: networkEventDispatch }}>
       <canvas
         id='game' ref={canvas} onClick={() => {
           setPointerLock(true)

@@ -1,11 +1,12 @@
-import { useEffect, useLayoutEffect, useState, useRef, useContext } from 'react'
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { PacketKeys } from 'open-assault-core/networking'
 
 import styles from './chat.module.scss'
-import { NetworkContext } from '../../lib/game/networking'
+import { addCustomListener, NetworkContext } from '../../lib/game/networking'
 import keybinds from '../../lib/keybinds'
 
 const Chat = (): JSX.Element => {
-  const { ws } = useContext(NetworkContext)
+  const { ws, eventDispatch } = useContext(NetworkContext)
 
   const [messages, setMessages] = useState<string[]>([])
   const [chatInputActive, setChatInputActive] = useState<boolean>(false)
@@ -22,24 +23,24 @@ const Chat = (): JSX.Element => {
       addMessage(`Connected to ${ws.url}`)
     }
 
-    const messageEvent = (event): void => {
-      const packet = event.detail
+    const messageEvent = addCustomListener(
+      eventDispatch,
+      PacketKeys.CHAT_MESSAGE,
+      (event): void => {
+        const packet = event.detail
 
-      if (packet.type !== 'chatMessage') return
-
-      console.log('Message from server ', packet.data)
-      addMessage(packet.data)
-    }
+        console.log('Message from server ', packet.data)
+        addMessage(packet.data)
+      }
+    )
 
     ws.addEventListener('open', openConnection)
-    ws.addEventListener('packet', messageEvent)
 
     return () => { // this will cause a re-register of event listeners with every disconnect of the effect - can this be optimized?
       console.log('unregister effect')
-      ws.removeEventListener('open', openConnection)
-      ws.removeEventListener('packet', messageEvent)
+      eventDispatch.removeEventListener(...messageEvent)
     }
-  }, [ws])
+  }, [ws, eventDispatch])
 
   useEffect(() => {
     const keyPress = (e): void => {

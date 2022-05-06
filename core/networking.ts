@@ -1,10 +1,9 @@
+export const enum PacketKeys {
+  CHAT_MESSAGE = 'message'
+}
+
 export interface Packets {
-  chatMessage: {
-    data: string
-  }
-  chatMessageSubmit: {
+  [PacketKeys.CHAT_MESSAGE]: {
     data: string
   }
 }
-
-export type PacketNames = keyof Packets
