@@ -11,8 +11,10 @@ export function addCustomListener<T extends PacketKeys> (
   eventTarget: EventTarget,
   eventName: T,
   callback: (evt: CustomEvent<Packets[T]>) => void
-): [T, EventListener] {
+): () => void {
   eventTarget.addEventListener(eventName, callback)
 
-  return [eventName, callback]
+  return () => {
+    eventTarget.removeEventListener(eventName, callback)
+  }
 }

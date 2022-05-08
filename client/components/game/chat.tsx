@@ -29,8 +29,8 @@ const Chat = (): JSX.Element => {
       (event): void => {
         const packet = event.detail
 
-        console.log('Message from server ', packet.data)
-        addMessage(packet.data)
+        console.log('Message from server ', packet)
+        addMessage(packet)
       }
     )
 
@@ -38,7 +38,7 @@ const Chat = (): JSX.Element => {
 
     return () => { // this will cause a re-register of event listeners with every disconnect of the effect - can this be optimized?
       console.log('unregister effect')
-      eventDispatch.removeEventListener(...messageEvent)
+      messageEvent()
     }
   }, [ws, eventDispatch])
 

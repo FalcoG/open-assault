@@ -100,7 +100,7 @@ function Game (): JSX.Element {
       try {
         const parsed = JSON.parse(message.data)
 
-        networkEventDispatch.dispatchEvent(new CustomEvent(parsed.type, { detail: parsed }))
+        networkEventDispatch.dispatchEvent(new CustomEvent(parsed.type, { detail: parsed.data }))
       } catch (e) {
         console.log('Malformed server packet', message)
       }
