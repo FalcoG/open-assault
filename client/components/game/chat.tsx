@@ -1,8 +1,8 @@
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { PacketKeys } from 'open-assault-core/networking'
+import { ClientPacketKeys, ServerPacketKeys } from 'open-assault-core/networking'
 
 import styles from './chat.module.scss'
-import { addCustomListener, NetworkContext } from '../../lib/game/networking'
+import { addCustomListener, createPacket, NetworkContext } from '../../lib/game/networking'
 import keybinds from '../../lib/keybinds'
 
 const Chat = (): JSX.Element => {
@@ -19,18 +19,18 @@ const Chat = (): JSX.Element => {
     if (ws == null) return
 
     const openConnection = (): void => {
-      ws.send('Hello Server!')
+      ws.send(createPacket(ClientPacketKeys.CHAT_MESSAGE, 'Hello Server!'))
       addMessage(`Connected to ${ws.url}`)
     }
 
     const messageEvent = addCustomListener(
       eventDispatch,
-      PacketKeys.CHAT_MESSAGE,
+      ServerPacketKeys.CHAT_MESSAGE,
       (event): void => {
         const packet = event.detail
 
         console.log('Message from server ', packet)
-        addMessage(packet)
+        addMessage(`[${packet.origin}] ${packet.text}`)
       }
     )
 
@@ -65,7 +65,7 @@ const Chat = (): JSX.Element => {
   const sendChatMessage = (event): void => {
     event.preventDefault()
     if (ws == null) return
-    ws.send(chatInput)
+    ws.send(createPacket(ClientPacketKeys.CHAT_MESSAGE, chatInput))
     setChatInputActive(false)
     setChatInput('')
   }

@@ -1,20 +1,19 @@
-import { WebSocketServer } from 'ws'
 import { randomUUID } from 'crypto'
-import { PacketKeys } from 'open-assault-core/networking'
+import { ClientPacketKeys, ServerPacketKeys } from 'open-assault-core/networking'
 import { createPacket } from './lib/create-packet'
+import Server from './class/Server'
 
-const wss = new WebSocketServer({ port: 8080 })
+const server = new Server()
 
-wss.on('connection', (ws) => {
+server.onClientConnection((ws) => {
   const uuid = randomUUID()
 
   ws.id = uuid
 
-  ws.on('message', (data) => {
-    console.log('received: %s', data)
-  })
-
-  ws.send(createPacket(PacketKeys.CHAT_MESSAGE, `Welcome ${uuid}!`))
+  ws.send(createPacket(ServerPacketKeys.CHAT_MESSAGE, {
+    text: `Welcome ${uuid}!`,
+    origin: 'SERVER'
+  }))
 
   ws.send(JSON.stringify({
     type: 'set',
@@ -22,8 +21,20 @@ wss.on('connection', (ws) => {
   }))
 })
 
+server.onClientPacket(ClientPacketKeys.CHAT_MESSAGE, (ws, data) => {
+  console.log('client packet onclientpacket', data)
+
+  ws.send(createPacket(ServerPacketKeys.CHAT_MESSAGE, {
+    text: data,
+    origin: ws.id
+  }))
+})
+
 setInterval(() => {
-  wss.clients.forEach((ws) => {
-    ws.send(createPacket(PacketKeys.CHAT_MESSAGE, `Server: ${Date.now()}`))
+  server.wss.clients.forEach((ws) => {
+    ws.send(createPacket(ServerPacketKeys.CHAT_MESSAGE, {
+      text: Date.now().toString(),
+      origin: 'SERVER'
+    }))
   })
 }, 10000)

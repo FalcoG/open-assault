@@ -1,8 +1,8 @@
-import { PacketKeys, Packets } from 'open-assault-core/networking'
+import { ServerPacketKeys, ServerPackets } from 'open-assault-core/networking'
 
-export function createPacket<T extends PacketKeys> (
+export function createPacket<T extends ServerPacketKeys> (
   eventName: T,
-  data: Packets[T]
+  data: ServerPackets[T]
 ): string {
   return JSON.stringify({
     type: eventName,
