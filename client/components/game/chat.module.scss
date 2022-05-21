@@ -1,12 +1,11 @@
 @use "../../styles/variables/colors" as colors;
-
-$offset: 1em;
+@use "../../styles/variables/dimensions" as dimensions;
 
 .chat {
   width: 20vw;
   position: fixed;
-  bottom: $offset;
-  left: $offset;
+  bottom: dimensions.$gui-offset;
+  left: dimensions.$gui-offset;
   background: colors.$background-menu;
   text-align: left;
   padding: .5em;
