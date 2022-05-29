@@ -1,6 +1,5 @@
 import { randomUUID } from 'crypto'
 import { ClientPacketKeys, ServerPacketKeys } from 'open-assault-core/networking'
-import { createPacket } from './lib/create-packet'
 import Server from './class/Server'
 
 const server = new Server()
@@ -10,10 +9,10 @@ server.onClientConnection((ws) => {
 
   ws.id = uuid
 
-  ws.send(createPacket(ServerPacketKeys.CHAT_MESSAGE, {
+  server.send(ws, ServerPacketKeys.CHAT_MESSAGE, {
     text: `Welcome ${uuid}!`,
     origin: 'SERVER'
-  }))
+  })
 
   ws.send(JSON.stringify({
     type: 'set',
@@ -24,17 +23,8 @@ server.onClientConnection((ws) => {
 server.onClientPacket(ClientPacketKeys.CHAT_MESSAGE, (ws, data) => {
   console.log('client packet onclientpacket', data)
 
-  ws.send(createPacket(ServerPacketKeys.CHAT_MESSAGE, {
+  server.broadcast(ServerPacketKeys.CHAT_MESSAGE, {
     text: data,
     origin: ws.id
-  }))
-})
-
-setInterval(() => {
-  server.wss.clients.forEach((ws) => {
-    ws.send(createPacket(ServerPacketKeys.CHAT_MESSAGE, {
-      text: Date.now().toString(),
-      origin: 'SERVER'
-    }))
   })
-}, 10000)
+})

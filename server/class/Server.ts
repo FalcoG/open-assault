@@ -1,6 +1,7 @@
 import { WebSocketServer } from 'ws'
 import { EventEmitter } from 'events'
-import { ClientPacketKeys, ClientPackets } from 'open-assault-core/networking'
+import { ClientPacketKeys, ClientPackets, ServerPacketKeys, ServerPackets } from 'open-assault-core/networking'
+import { createPacket } from '../lib/create-packet'
 
 interface WebSocketConnection extends WebSocket {
   id: string
@@ -16,7 +17,7 @@ class Server {
         if (data instanceof Buffer) {
           try {
             const packet = JSON.parse(data.toString())
-            // todo: user can mess with the packets, typing doesn't mean everything!
+            // todo: user can mess with the packets, TS typing doesn't mean everything!
             this.emitter.emit(packet.type, ws, packet.data)
           } catch (e) {
             console.error('Malformed client packet')
@@ -41,6 +42,23 @@ class Server {
     return () => {
       this.emitter.removeListener(eventName, callback)
     }
+  }
+
+  broadcast<T extends ServerPacketKeys> (
+    eventName: T,
+    data: ServerPackets[T]
+  ): void {
+    this.wss.clients.forEach((ws) => {
+      ws.send(createPacket(eventName, data))
+    })
+  }
+
+  send<T extends ServerPacketKeys>(
+    ws: WebSocketConnection,
+    eventName: T,
+    data: ServerPackets[T]
+  ): void {
+    ws.send(createPacket(eventName, data))
   }
 }
 
