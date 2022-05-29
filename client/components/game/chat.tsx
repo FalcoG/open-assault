@@ -1,11 +1,12 @@
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ClientPacketKeys, ServerPacketKeys } from 'open-assault-core/networking'
 
 import styles from './chat.module.scss'
 import { addCustomListener, createPacket, NetworkContext } from '../../lib/game/networking'
 import keybinds from '../../lib/keybinds'
+import Overlay from '../gui/overlay'
 
-const Chat = (): JSX.Element => {
+const Chat: React.FunctionComponent = () => {
   const { ws, eventDispatch } = useContext(NetworkContext)
 
   const [messages, setMessages] = useState<string[]>([])
@@ -81,23 +82,25 @@ const Chat = (): JSX.Element => {
   }, [chatInputActive])
 
   return (
-    <div className={styles.chat}>
-      <ul className={styles.chatMessages} ref={chatBox}>
-        {(messages.length > 0) && messages.map((message, index) => <li key={index}>{message}</li>)}
-      </ul>
-      {chatInputActive && (
-        <form onSubmit={sendChatMessage}>
-          <input
-            type='text' name='chat-input' autoComplete='off'
-            value={chatInput}
-            onChange={(e) => { setChatInput(e.target.value) }}
-            onBlur={(e) => { setChatInputActive(false) }}
-            ref={chatInputRef}
-            className={styles.chatInput}
-          />
-        </form>
-      )}
-    </div>
+    <Overlay position={['left', 'bottom']}>
+      <div className={styles.chat}>
+        <ul className={styles.chatMessages} ref={chatBox}>
+          {(messages.length > 0) && messages.map((message, index) => <li key={index}>{message}</li>)}
+        </ul>
+        {chatInputActive && (
+          <form onSubmit={sendChatMessage}>
+            <input
+              type='text' name='chat-input' autoComplete='off'
+              value={chatInput}
+              onChange={(e) => { setChatInput(e.target.value) }}
+              onBlur={(e) => { setChatInputActive(false) }}
+              ref={chatInputRef}
+              className={styles.chatInput}
+            />
+          </form>
+        )}
+      </div>
+    </Overlay>
   )
 }
 

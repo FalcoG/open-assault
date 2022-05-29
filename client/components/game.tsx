@@ -1,13 +1,16 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react'
 import * as THREE from 'three'
 
 import Menu from './game/menu'
 import Chat from './game/chat'
+import Scoreboard from './game/scoreboard'
 import PointerLock from './game/pointer-lock'
 
 import { NetworkContext } from '../lib/game/networking'
 
-function Game (): JSX.Element {
+import styles from './game.module.scss'
+
+const Game: React.FunctionComponent = () => {
   const canvas = useRef<HTMLCanvasElement>(null)
   const renderRef = useRef<null | number>(null)
 
@@ -15,7 +18,7 @@ function Game (): JSX.Element {
   const [rendering, setRendering] = useState(false)
 
   const [scene, setScene] = useState<THREE.Scene>()
-  const [camera, setCamera] = useState<THREE.Camera>()
+  const [camera, setCamera] = useState<THREE.Camera | THREE.PerspectiveCamera>()
   const [testCube, setTestCube] = useState<THREE.Mesh>()
 
   const [pointerLock, setPointerLock] = useState<boolean>(false)
@@ -89,6 +92,32 @@ function Game (): JSX.Element {
     }
   }, [renderer, rendering, testCube])
 
+  const updateCanvasSize = useCallback((): void => {
+    if (renderer != null && camera != null) {
+      renderer.setSize(window.innerWidth, window.innerHeight)
+
+      if (camera instanceof THREE.PerspectiveCamera) {
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+      }
+    }
+  }, [renderer, camera])
+
+  // canvas size updater
+  useEffect(() => {
+    updateCanvasSize()
+  }, [renderer, camera])
+
+  useLayoutEffect(() => {
+    if (renderer != null) {
+      window.addEventListener('resize', updateCanvasSize)
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateCanvasSize)
+    }
+  }, [renderer])
+
   useEffect(() => {
     setSocket(new WebSocket('ws://localhost:8080'))
   }, [])
@@ -119,6 +148,7 @@ function Game (): JSX.Element {
         id='game' ref={canvas} onClick={() => {
           setPointerLock(true)
         }}
+        className={styles.canvas}
       />
       {camera != null &&
         <PointerLock
@@ -139,6 +169,7 @@ function Game (): JSX.Element {
       Pointer lock: {JSON.stringify(pointerLock)}
 
       <Menu visible={!pointerLock} />
+      <Scoreboard disabled={!pointerLock} />
       <Chat />
     </NetworkContext.Provider>
   )

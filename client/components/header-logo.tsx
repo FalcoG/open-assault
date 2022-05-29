@@ -1,8 +1,9 @@
+import React from 'react'
 import Link from 'next/link'
 
 import styles from './header-logo.module.scss'
 
-export default function HeaderLogo (): JSX.Element {
+const HeaderLogo: React.FunctionComponent = ()=> {
   return (
     <header className={styles.header}>
       <nav>
@@ -11,3 +12,5 @@ export default function HeaderLogo (): JSX.Element {
     </header>
   )
 }
+
+export default HeaderLogo

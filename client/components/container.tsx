@@ -1,9 +1,13 @@
+import React from 'react'
+
 import styles from './container.module.scss'
 
-export default function Container ({ children }): JSX.Element {
+const Container: React.FunctionComponent<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className={styles.container}>
       {children}
     </div>
   )
 }
+
+export default Container

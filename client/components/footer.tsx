@@ -1,9 +1,13 @@
+import React from 'react'
+
 import styles from './footer.module.scss'
 
-export default function Footer (): JSX.Element {
+const Footer: React.FunctionComponent = () => {
   return (
     <footer className={styles.footer}>
       <p>Open Assault &copy; {new Date().getFullYear()}</p>
     </footer>
   )
 }
+
+export default Footer

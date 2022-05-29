@@ -7,7 +7,10 @@ import styles from './layout.module.scss'
 
 export const siteTitle = 'Open Assault'
 
-export default function Layout ({ focus = false, children }: { focus: boolean, children: React.ReactNode}): JSX.Element {
+const Layout: React.FunctionComponent<{
+  focus: boolean
+  children: React.ReactNode
+}> = ({ focus = false, children }) => {
   return (
     <div className={styles.layout}>
       <Head>
@@ -22,3 +25,5 @@ export default function Layout ({ focus = false, children }: { focus: boolean, c
     </div>
   )
 }
+
+export default Layout

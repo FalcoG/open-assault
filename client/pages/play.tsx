@@ -5,7 +5,7 @@ export default function Play (): JSX.Element {
   return (
     <Layout focus>
       <h1>It's time to play.</h1>
-      <p>Click <a>here</a>, or press SPACE to start</p>
+      <p>Click the game to start</p>
 
       <Game />
     </Layout>

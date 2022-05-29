@@ -1,12 +1,14 @@
 import React from 'react'
 
+import Overlay from '../gui/overlay'
+
 const Menu: React.FunctionComponent<{ visible: boolean}> = ({ visible }) => {
   return (
     <>
       {visible && (
-        <div>
+        <Overlay position={['center', 'center']}>
           Hello menu
-        </div>
+        </Overlay>
       )}
     </>
   )

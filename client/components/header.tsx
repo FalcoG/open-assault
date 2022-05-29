@@ -1,9 +1,10 @@
+import React from 'react'
 import Link from 'next/link'
 
 import styles from './header.module.scss'
 import Container from './container'
 
-export default function Header (): JSX.Element {
+const Header: React.FunctionComponent = () => {
   return (
     <header className={styles.header}>
       <Container>
@@ -18,3 +19,5 @@ export default function Header (): JSX.Element {
     </header>
   )
 }
+
+export default Header

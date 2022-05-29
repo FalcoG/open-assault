@@ -1,0 +1,11 @@
+@use "../../styles/variables/dimensions" as dimensions;
+
+.overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: dimensions.$index-gui;
+  margin: dimensions.$gui-offset;
+}
+
