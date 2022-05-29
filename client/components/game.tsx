@@ -108,7 +108,7 @@ const Game: React.FunctionComponent = () => {
     updateCanvasSize()
   }, [renderer, camera])
 
-  useLayoutEffect(() => {
+  typeof window !== 'undefined' && useLayoutEffect(() => {
     if (renderer != null) {
       window.addEventListener('resize', updateCanvasSize)
     }
