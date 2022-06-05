@@ -4,7 +4,7 @@ import { ServerPacketKeys } from 'open-assault-core/networking'
 
 import { addCustomListener, NetworkContext } from '../../lib/game/networking'
 import keybinds from '../../lib/keybinds'
-import Overlay from '../gui/overlay'
+import Overlay from './overlay'
 
 const Scoreboard = (
   { disabled }: { disabled: boolean }

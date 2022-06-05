@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
-import * as THREE from 'three'
+import { RendererContext } from './renderer'
 
-const PointerLock = ({ lock, lockChange, camera }: {
+const PointerLock = ({ lock, lockChange }: {
   lock: boolean
   lockChange: (active: boolean) => void
-  camera: THREE.Camera
 }): JSX.Element => {
+  const { camera } = useContext(RendererContext)
+
   const [pointerControls, setPointerControls] = useState<PointerLockControls | undefined>()
   const [pointerLock, setPointerLock] = useState<boolean>(false)
 

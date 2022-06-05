@@ -4,7 +4,7 @@ import { ClientPacketKeys, ServerPacketKeys } from 'open-assault-core/networking
 import styles from './chat.module.scss'
 import { addCustomListener, createPacket, NetworkContext } from '../../lib/game/networking'
 import keybinds from '../../lib/keybinds'
-import Overlay from '../gui/overlay'
+import Overlay from './overlay'
 
 const Chat: React.FunctionComponent = () => {
   const { ws, eventDispatch } = useContext(NetworkContext)

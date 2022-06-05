@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Overlay from '../gui/overlay'
+import Overlay from './overlay'
 
 const Menu: React.FunctionComponent<{ visible: boolean}> = ({ visible }) => {
   return (

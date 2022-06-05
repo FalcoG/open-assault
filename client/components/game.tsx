@@ -1,122 +1,21 @@
-import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react'
-import * as THREE from 'three'
+import React, { useState, useEffect } from 'react'
 
-import Menu from './game/menu'
-import Chat from './game/chat'
-import Scoreboard from './game/scoreboard'
-import PointerLock from './game/pointer-lock'
+import Menu from './gui/menu'
+import Chat from './gui/chat'
+import Scoreboard from './gui/scoreboard'
+import Renderer from './game/renderer'
 
 import { NetworkContext } from '../lib/game/networking'
 
-import styles from './game.module.scss'
+import Camera from './game/camera'
+import Resizer from './game/resizer'
+import PointerLock from './game/pointer-lock'
 
 const Game: React.FunctionComponent = () => {
-  const canvas = useRef<HTMLCanvasElement>(null)
-  const renderRef = useRef<null | number>(null)
-
-  const [renderer, setRenderer] = useState<THREE.WebGLRenderer>()
-  const [rendering, setRendering] = useState(false)
-
-  const [scene, setScene] = useState<THREE.Scene>()
-  const [camera, setCamera] = useState<THREE.Camera | THREE.PerspectiveCamera>()
-  const [testCube, setTestCube] = useState<THREE.Mesh>()
-
   const [pointerLock, setPointerLock] = useState<boolean>(false)
 
   const [socket, setSocket] = useState<WebSocket>()
   const [networkEventDispatch] = useState(new EventTarget())
-
-  useEffect(() => {
-    if (canvas.current == null) return
-    console.log('useEffect renderer')
-
-    const glRenderer = new THREE.WebGLRenderer({
-      canvas: canvas.current
-    })
-
-    setRenderer(glRenderer)
-
-    const fov = 75
-    const aspect = 2 // the canvas default
-    const near = 0.1
-    const far = 5
-    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
-
-    camera.position.z = 2
-
-    setCamera(camera)
-
-    const scene = new THREE.Scene()
-    setScene(scene)
-
-    const boxWidth = 1
-    const boxHeight = 1
-    const boxDepth = 1
-    const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth)
-
-    const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 })
-
-    const cube = new THREE.Mesh(geometry, material)
-
-    scene.add(cube)
-
-    setTestCube(cube)
-    setRendering(true)
-  }, [canvas])
-
-  useEffect(() => {
-    console.log('useEffect anim frame', renderer, rendering)
-
-    function render (time): void {
-      time *= 0.001 // convert time to seconds
-
-      // @ts-expect-error
-      testCube.rotation.x = time
-      // @ts-expect-error
-      testCube.rotation.y = time
-
-      // @ts-expect-error
-      renderer.render(scene, camera)
-
-      renderRef.current = requestAnimationFrame(render)
-    }
-
-    if (renderer instanceof THREE.WebGLRenderer && rendering) {
-      renderRef.current = requestAnimationFrame(render)
-    }
-
-    return () => {
-      if (typeof renderRef.current === 'number') {
-        cancelAnimationFrame(renderRef.current)
-      }
-    }
-  }, [renderer, rendering, testCube])
-
-  const updateCanvasSize = useCallback((): void => {
-    if (renderer != null && camera != null) {
-      renderer.setSize(window.innerWidth, window.innerHeight)
-
-      if (camera instanceof THREE.PerspectiveCamera) {
-        camera.aspect = window.innerWidth / window.innerHeight
-        camera.updateProjectionMatrix()
-      }
-    }
-  }, [renderer, camera])
-
-  // canvas size updater
-  useEffect(() => {
-    updateCanvasSize()
-  }, [renderer, camera])
-
-  typeof window !== 'undefined' && useLayoutEffect(() => {
-    if (renderer != null) {
-      window.addEventListener('resize', updateCanvasSize)
-    }
-
-    return () => {
-      window.removeEventListener('resize', updateCanvasSize)
-    }
-  }, [renderer])
 
   useEffect(() => {
     setSocket(new WebSocket('ws://localhost:8080'))
@@ -144,28 +43,19 @@ const Game: React.FunctionComponent = () => {
 
   return (
     <NetworkContext.Provider value={{ ws: socket, eventDispatch: networkEventDispatch }}>
-      <canvas
-        id='game' ref={canvas} onClick={() => {
+      <Renderer
+        onClick={() => {
           setPointerLock(true)
         }}
-        className={styles.canvas}
-      />
-      {camera != null &&
+      >
         <PointerLock
           lock={pointerLock}
-          lockChange={(active) => {
-            setPointerLock(active)
-          }}
-          camera={camera}
-        />}
+          lockChange={(active) => { setPointerLock(active) }}
+        />
+        <Camera />
+        <Resizer />
+      </Renderer>
       <br />
-      <button
-        onClick={() => {
-          setRendering(!rendering)
-        }}
-      >
-        Toggle rendering, current: {JSON.stringify(rendering)}
-      </button>
       Pointer lock: {JSON.stringify(pointerLock)}
 
       <Menu visible={!pointerLock} />
