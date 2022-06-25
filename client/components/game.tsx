@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react'
+import { Canvas } from '@react-three/fiber'
+import { PointerLockControls } from '@react-three/drei'
 
 import Menu from './gui/menu'
 import Chat from './gui/chat'
 import Scoreboard from './gui/scoreboard'
-import Renderer from './game/renderer'
 
 import { NetworkContext } from '../lib/game/networking'
 
-import Camera from './game/camera'
-import Resizer from './game/resizer'
-import PointerLock from './game/pointer-lock'
+import TestCube from './game/mesh/test-cube'
 
 const Game: React.FunctionComponent = () => {
   const [pointerLock, setPointerLock] = useState<boolean>(false)
@@ -43,20 +42,21 @@ const Game: React.FunctionComponent = () => {
 
   return (
     <NetworkContext.Provider value={{ ws: socket, eventDispatch: networkEventDispatch }}>
-      <Renderer
-        onClick={() => {
-          setPointerLock(true)
-        }}
+      <Canvas
+        style={{ position: 'fixed', top: 0 }}
       >
-        <PointerLock
-          lock={pointerLock}
-          lockChange={(active) => { setPointerLock(active) }}
+        <TestCube />
+        <PointerLockControls
+          onLock={(e) => {
+            setPointerLock(true)
+            console.log('lock', e)
+          }}
+          onUnlock={(e) => {
+            setPointerLock(false)
+            console.log('unlock', e)
+          }}
         />
-        <Camera />
-        <Resizer />
-      </Renderer>
-      <br />
-      Pointer lock: {JSON.stringify(pointerLock)}
+      </Canvas>
 
       <Menu visible={!pointerLock} />
       <Scoreboard disabled={!pointerLock} />
