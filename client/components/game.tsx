@@ -7,6 +7,7 @@ import Chat from './gui/chat'
 import Scoreboard from './gui/scoreboard'
 
 import { NetworkContext } from '../lib/game/networking'
+import { NetworkDataProvider } from '../lib/game/network-data'
 
 import TestCube from './game/mesh/test-cube'
 
@@ -42,25 +43,28 @@ const Game: React.FunctionComponent = () => {
 
   return (
     <NetworkContext.Provider value={{ ws: socket, eventDispatch: networkEventDispatch }}>
-      <Canvas
-        style={{ position: 'fixed', top: 0 }}
-      >
-        <TestCube />
-        <PointerLockControls
-          onLock={(e) => {
-            setPointerLock(true)
-            console.log('lock', e)
-          }}
-          onUnlock={(e) => {
-            setPointerLock(false)
-            console.log('unlock', e)
-          }}
-        />
-      </Canvas>
+      <NetworkDataProvider>
+        <Canvas
+          style={{ position: 'fixed', top: 0 }}
+        >
+          <TestCube />
+          <PointerLockControls
+            onLock={(e) => {
+              setPointerLock(true)
+              console.log('lock', e)
+            }}
+            onUnlock={(e) => {
+              setPointerLock(false)
+              console.log('unlock', e)
+            }}
+          />
+        </Canvas>
 
-      <Menu visible={!pointerLock} />
-      <Scoreboard disabled={!pointerLock} />
-      <Chat />
+        <Scoreboard disabled={!pointerLock} />
+
+        <Menu visible={!pointerLock} />
+        <Chat />
+      </NetworkDataProvider>
     </NetworkContext.Provider>
   )
 }
