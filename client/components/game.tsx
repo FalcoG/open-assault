@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { PointerLockControls } from '@react-three/drei'
+import React, { useEffect, useState } from 'react'
 
-import Menu from './gui/menu'
+import { GameStateProvider } from '../lib/game/game-state'
+import { NetworkDataProvider } from '../lib/game/network-data'
+import { NetworkContext } from '../lib/game/networking'
+import Canvas from './game/canvas'
 import Chat from './gui/chat'
+import Menu from './gui/menu'
 import Scoreboard from './gui/scoreboard'
 
-import { NetworkContext } from '../lib/game/networking'
-import { NetworkDataProvider } from '../lib/game/network-data'
-
-import TestCube from './game/mesh/test-cube'
-
 const Game: React.FunctionComponent = () => {
-  const [pointerLock, setPointerLock] = useState<boolean>(false)
-
   const [socket, setSocket] = useState<WebSocket>()
   const [networkEventDispatch] = useState(new EventTarget())
 
@@ -44,26 +39,14 @@ const Game: React.FunctionComponent = () => {
   return (
     <NetworkContext.Provider value={{ ws: socket, eventDispatch: networkEventDispatch }}>
       <NetworkDataProvider>
-        <Canvas
-          style={{ position: 'fixed', top: 0 }}
-        >
-          <TestCube />
-          <PointerLockControls
-            onLock={(e) => {
-              setPointerLock(true)
-              console.log('lock', e)
-            }}
-            onUnlock={(e) => {
-              setPointerLock(false)
-              console.log('unlock', e)
-            }}
-          />
-        </Canvas>
+        <GameStateProvider>
+          <Canvas />
 
-        <Scoreboard disabled={!pointerLock} />
+          <Scoreboard />
 
-        <Menu visible={!pointerLock} />
-        <Chat />
+          <Menu />
+          <Chat />
+        </GameStateProvider>
       </NetworkDataProvider>
     </NetworkContext.Provider>
   )

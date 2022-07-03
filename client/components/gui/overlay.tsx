@@ -1,10 +1,14 @@
 import React from 'react'
+
 import styles from './overlay.module.scss'
 
 type OverlayPositionX = 'left' | 'center' | 'right'
 type OverlayPositionY = 'top' | 'center' | 'bottom'
 
-const Overlay: React.FunctionComponent<{ position: [OverlayPositionX, OverlayPositionY], children: React.ReactNode }> = (
+const Overlay: React.FunctionComponent<{
+  position: [OverlayPositionX, OverlayPositionY]
+  children: React.ReactNode
+}> = (
   { position, children }
 ) => {
   return (

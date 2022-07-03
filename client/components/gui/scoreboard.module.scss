@@ -1,0 +1,5 @@
+@use "../../styles/variables/colors" as colors;
+
+.scoreboard {
+  background: transparentize(colors.$background-menu, 0.5);
+}

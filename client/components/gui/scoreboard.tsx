@@ -1,24 +1,25 @@
 import { useContext, useEffect, useState } from 'react'
 
+import { GameStateContext } from '../../lib/game/game-state'
+import { NetworkDataContext } from '../../lib/game/network-data'
 import keybinds from '../../lib/keybinds'
 import Overlay from './overlay'
-import { NetworkDataContext } from '../../lib/game/network-data'
+import styles from './scoreboard.module.scss'
 
-const Scoreboard = (
-  { disabled }: { disabled: boolean }
-): JSX.Element => {
+const Scoreboard = (): JSX.Element => {
   const [visible, setVisible] = useState(false)
   const { players } = useContext(NetworkDataContext)
+  const { pointerLock } = useContext(GameStateContext)
 
   useEffect(() => {
-    if (visible && disabled) {
+    if (visible && !pointerLock) {
       setVisible(false)
     }
-  }, [disabled])
+  }, [pointerLock])
 
   useEffect(() => {
     const keyPress = (e): void => {
-      if (!disabled && e.key === keybinds.scoreboard_open) {
+      if (pointerLock && e.key === keybinds.scoreboard_open) {
         e.preventDefault()
 
         if (e.type === 'keydown') {
@@ -36,16 +37,19 @@ const Scoreboard = (
       document.removeEventListener('keydown', keyPress)
       document.removeEventListener('keyup', keyPress)
     }
-  }, [disabled])
+  }, [pointerLock])
 
   return visible
     ? (
-      <Overlay position={['center', 'top']}>scoreboard!
-        <ul>
-          {players.map(player =>
-            <li key={player.uuid}>{player.username}, id: {player.uuid}</li>
-          )}
-        </ul>
+      <Overlay position={['center', 'center']}>
+        <div className={styles.scoreboard}>
+          scoreboard!
+          <ul>
+            {players.map(player =>
+              <li key={player.uuid}>{player.username}, id: {player.uuid}</li>
+            )}
+          </ul>
+        </div>
       </Overlay>
       )
     : <></>
