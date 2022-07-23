@@ -1,0 +1,7 @@
+@use "../../styles/variables/dimensions" as dimensions;
+
+.stats {
+  left: unset !important;
+  right: dimensions.$gui-offset !important;
+  top: dimensions.$gui-offset !important;
+}

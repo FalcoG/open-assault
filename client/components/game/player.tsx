@@ -12,29 +12,46 @@ const Player = (props: JSX.IntrinsicElements['mesh']): JSX.Element => {
   const [walkingBackwards, setWalkingBackwards] = useState(false)
   const [walkingLeft, setWalkingLeft] = useState(false)
   const [walkingRight, setWalkingRight] = useState(false)
+  const [sprinting, setSprinting] = useState(false)
   const { pointerLock } = useContext(GameStateContext)
 
   useEffect(() => {
     const keyDownHandler = (e): void => {
-      if (e.key === keymap.movement_walking_forwards) {
-        setWalkingForwards(true)
-      } else if (e.key === keymap.movement_walking_backwards) {
-        setWalkingBackwards(true)
-      } else if (e.key === keymap.movement_walking_left) {
-        setWalkingLeft(true)
-      } else if (e.key === keymap.movement_walking_right) {
-        setWalkingRight(true)
+      switch (e.code) {
+        case keymap.movement_walking_forwards:
+          setWalkingForwards(true)
+          break
+        case keymap.movement_walking_backwards:
+          setWalkingBackwards(true)
+          break
+        case keymap.movement_walking_left:
+          setWalkingLeft(true)
+          break
+        case keymap.movement_walking_right:
+          setWalkingRight(true)
+          break
+        case keymap.movement_walking_sprint:
+          setSprinting(true)
+          break
       }
     }
     const keyUpHandler = (e): void => {
-      if (e.key === keymap.movement_walking_forwards) {
-        setWalkingForwards(false)
-      } else if (e.key === keymap.movement_walking_backwards) {
-        setWalkingBackwards(false)
-      } else if (e.key === keymap.movement_walking_left) {
-        setWalkingLeft(false)
-      } else if (e.key === keymap.movement_walking_right) {
-        setWalkingRight(false)
+      switch (e.code) {
+        case keymap.movement_walking_forwards:
+          setWalkingForwards(false)
+          break
+        case keymap.movement_walking_backwards:
+          setWalkingBackwards(false)
+          break
+        case keymap.movement_walking_left:
+          setWalkingLeft(false)
+          break
+        case keymap.movement_walking_right:
+          setWalkingRight(false)
+          break
+        case keymap.movement_walking_sprint:
+          setSprinting(false)
+          break
       }
     }
 
@@ -49,32 +66,37 @@ const Player = (props: JSX.IntrinsicElements['mesh']): JSX.Element => {
 
   useFrame((state, delta) => {
     const canMove = ref.current != null && pointerLock
+    const speed = sprinting ? 2 : 1
 
     if (!canMove) return
 
     const rotationalVec = new Vector3()
-    state.camera.getWorldDirection(rotationalVec)
+    state.camera.getWorldDirection(rotationalVec) // this vector is relative to the camera itself
     rotationalVec.y = 0
-    ref.current.lookAt(rotationalVec.add(ref.current.position)) // todo: this could probably be more efficient
+    ref.current.lookAt(rotationalVec.clone().add(ref.current.position)) // make the vector absolute to the world
 
     // no else ifs for movement, users may press all keys at the same time!
     if (walkingForwards) {
-      ref.current.translateZ(1 * delta)
+      ref.current.translateZ(speed * delta)
     }
 
     if (walkingBackwards) {
-      ref.current.translateZ(-1 * delta)
+      ref.current.translateZ(-speed * delta)
     }
 
     if (walkingLeft) {
-      ref.current.translateX(1 * delta)
+      ref.current.translateX(speed * delta)
     }
 
     if (walkingRight) {
-      ref.current.translateX(-1 * delta)
+      ref.current.translateX(-speed * delta)
     }
 
-    state.camera.position.set(ref.current.position.x, ref.current.position.y + 1.8, ref.current.position.z)
+    const cameraPosition = ref.current.position.clone()
+    cameraPosition.sub(rotationalVec)
+    cameraPosition.setY(ref.current.position.y + 1.5)
+
+    state.camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
   })
 
   return (

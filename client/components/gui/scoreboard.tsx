@@ -19,7 +19,7 @@ const Scoreboard = (): JSX.Element => {
 
   useEffect(() => {
     const keyPress = (e): void => {
-      if (pointerLock && e.key === keymap.scoreboard_open) {
+      if (pointerLock && e.code === keymap.scoreboard_open) {
         e.preventDefault()
 
         if (e.type === 'keydown') {

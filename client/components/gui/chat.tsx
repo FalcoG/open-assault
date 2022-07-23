@@ -45,7 +45,7 @@ const Chat: React.FunctionComponent = () => {
 
   useEffect(() => {
     const keyPress = (e): void => {
-      if (e.key === keymap.chat_open) {
+      if (e.code === keymap.chat_open) {
         setChatInputActive(true)
       }
     }
