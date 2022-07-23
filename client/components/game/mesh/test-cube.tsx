@@ -1,7 +1,6 @@
-import React, { useContext, useRef, useState } from 'react'
-
-import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
+import React, { useContext, useRef, useState } from 'react'
+import * as THREE from 'three'
 
 import { NetworkDataContext } from '../../../lib/game/network-data'
 
@@ -14,7 +13,6 @@ const TestCube = (props: JSX.IntrinsicElements['mesh']): JSX.Element => {
   useFrame((state, delta) => {
     // todo: loop all boxes/players
     if (ref.current != null) {
-      ref.current.rotation.x += 1 * delta
       ref.current.rotation.y += 1 * delta
     }
   })

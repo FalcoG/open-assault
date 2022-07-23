@@ -6,6 +6,7 @@ import { NetworkContext } from '../lib/game/networking'
 import Canvas from './game/canvas'
 import Chat from './gui/chat'
 import Menu from './gui/menu'
+import Reticle from './gui/reticle'
 import Scoreboard from './gui/scoreboard'
 
 const Game: React.FunctionComponent = () => {
@@ -45,6 +46,7 @@ const Game: React.FunctionComponent = () => {
           <Scoreboard />
 
           <Menu />
+          <Reticle />
           <Chat />
         </GameStateProvider>
       </NetworkDataProvider>

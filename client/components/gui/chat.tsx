@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ClientPacketKeys, ServerPacketKeys } from 'open-assault-core/networking'
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-import styles from './chat.module.scss'
 import { addCustomListener, createPacket, NetworkContext } from '../../lib/game/networking'
-import keybinds from '../../lib/keybinds'
+import keymap from '../../lib/keymap'
+import styles from './chat.module.scss'
 import Overlay from './overlay'
 
 const Chat: React.FunctionComponent = () => {
@@ -45,12 +45,12 @@ const Chat: React.FunctionComponent = () => {
 
   useEffect(() => {
     const keyPress = (e): void => {
-      if (e.key === keybinds.chat_open) {
+      if (e.key === keymap.chat_open) {
         setChatInputActive(true)
       }
     }
 
-    document.addEventListener('keypress', keyPress)
+    document.addEventListener('keypress', keyPress, { passive: true })
 
     return () => {
       document.removeEventListener('keypress', keyPress)

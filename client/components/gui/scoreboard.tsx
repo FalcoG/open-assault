@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 
 import { GameStateContext } from '../../lib/game/game-state'
 import { NetworkDataContext } from '../../lib/game/network-data'
-import keybinds from '../../lib/keybinds'
+import keymap from '../../lib/keymap'
 import Overlay from './overlay'
 import styles from './scoreboard.module.scss'
 
@@ -19,7 +19,7 @@ const Scoreboard = (): JSX.Element => {
 
   useEffect(() => {
     const keyPress = (e): void => {
-      if (pointerLock && e.key === keybinds.scoreboard_open) {
+      if (pointerLock && e.key === keymap.scoreboard_open) {
         e.preventDefault()
 
         if (e.type === 'keydown') {

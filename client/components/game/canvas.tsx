@@ -1,12 +1,14 @@
-import { useContextBridge } from '@react-three/drei'
+import { GizmoHelper, GizmoViewport, useContextBridge } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import React from 'react'
+import * as THREE from 'three'
 
 import { GameStateContext } from '../../lib/game/game-state'
 import { NetworkDataContext } from '../../lib/game/network-data'
 import { NetworkContext } from '../../lib/game/networking'
 import Controls from './controls'
 import TestCube from './mesh/test-cube'
+import Player from './player'
 
 const ContextBridge: React.FunctionComponent = () => {
   const ContextBridge = useContextBridge(NetworkContext, NetworkDataContext, GameStateContext)
@@ -16,7 +18,17 @@ const ContextBridge: React.FunctionComponent = () => {
     >
       <ContextBridge>
         <Controls />
+        <ambientLight color='#404040' />
+        <primitive object={new THREE.AxesHelper(10)} />
+        <GizmoHelper
+          alignment='bottom-right'
+          margin={[80, 80]}
+        >
+          <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor='black' />
+        </GizmoHelper>
+        <Player />
         <TestCube />
+        <gridHelper />
       </ContextBridge>
     </Canvas>
   )
