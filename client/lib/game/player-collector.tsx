@@ -1,19 +1,28 @@
+import { ServerPacketKeys } from 'open-assault-core/networking'
 import React, { useCallback, useContext, useEffect } from 'react'
 
-import { ServerPacketKeys } from 'open-assault-core/networking'
-
-import { addCustomListener, NetworkContext } from './networking'
 import { NetworkDataContext } from './network-data'
+import { addCustomListener, NetworkContext } from './networking'
 
 const PlayerCollector: React.FunctionComponent = () => {
   const { eventDispatch } = useContext(NetworkContext)
-  const { players, setPlayers } = useContext(NetworkDataContext)
+  const { players, setPlayers, setUUID } = useContext(NetworkDataContext)
 
   const populatePlayer = useCallback((playerPacket): void => {
     setPlayers((prevData) => {
       return [...prevData, ...playerPacket]
     })
   }, [players])
+
+  useEffect(() => {
+    return addCustomListener(eventDispatch, ServerPacketKeys.PLAYER_IDENTIFY_SELF, (event): void => {
+      const uuid = event.detail.uuid
+
+      setUUID(uuid) // todo: could remove listener? as this event fires once
+
+      console.log('player uuid confirmed', uuid)
+    })
+  })
 
   useEffect(() => {
     const populateListener = addCustomListener(eventDispatch, ServerPacketKeys.PLAYERS, (event): void => {
@@ -32,6 +41,21 @@ const PlayerCollector: React.FunctionComponent = () => {
       joinListener()
     }
   })
+
+  useEffect(() => {
+    return addCustomListener(eventDispatch, ServerPacketKeys.PLAYERS_UPDATE, (event): void => {
+      const updatedPlayersData = event.detail
+
+      setPlayers((prevData) => {
+        return prevData.map(player => {
+          return {
+            ...player,
+            ...updatedPlayersData[player.uuid]
+          }
+        })
+      })
+    })
+  }, [])
 
   useEffect(() => {
     return addCustomListener(

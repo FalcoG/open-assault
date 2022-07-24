@@ -1,19 +1,23 @@
 import { useFrame } from '@react-three/fiber'
+import { ClientPacketKeys } from 'open-assault-core/networking'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { Vector3 } from 'three'
 
 import { GameStateContext } from '../../lib/game/game-state'
+import { createPacket, NetworkContext } from '../../lib/game/networking'
 import keymap from '../../lib/keymap'
+import PlayerModel from './mesh/player-model'
 
-const Player = (props: JSX.IntrinsicElements['mesh']): JSX.Element => {
-  const ref = useRef<THREE.Mesh>(null)
+const Player = (): JSX.Element => {
+  const ref = useRef<THREE.Group>(null)
   const [walkingForwards, setWalkingForwards] = useState(false)
   const [walkingBackwards, setWalkingBackwards] = useState(false)
   const [walkingLeft, setWalkingLeft] = useState(false)
   const [walkingRight, setWalkingRight] = useState(false)
   const [sprinting, setSprinting] = useState(false)
   const { pointerLock } = useContext(GameStateContext)
+  const { ws } = useContext(NetworkContext)
 
   useEffect(() => {
     const keyDownHandler = (e): void => {
@@ -99,17 +103,34 @@ const Player = (props: JSX.IntrinsicElements['mesh']): JSX.Element => {
     state.camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
   })
 
+  useEffect(() => {
+    if (ws == null) return
+
+    let ticker
+
+    if (ref.current != null) {
+      let lastPosition = new Vector3(0, 1000, 0) // todo: make this smarter, currently this is used to trigger the interval FN at least once
+      ticker = setInterval(() => {
+        if (ref.current == null) return // only added for the TS linter
+
+        const currentPosition = ref.current.position.clone()
+        const difference = currentPosition.clone().sub(lastPosition)
+
+        if (difference.x !== 0 || difference.y !== 0 || difference.z !== 0) {
+          console.log('tick, update position', currentPosition, difference)
+          ws.send(createPacket(ClientPacketKeys.PLAYER_CHARACTER_POSITION, currentPosition.toArray()))
+          lastPosition = currentPosition
+        }
+      }, 1000 / 60)
+    }
+
+    return () => {
+      ticker != null && clearInterval(ticker)
+    }
+  }, [ref.current, ws])
+
   return (
-    <group>
-      <mesh
-        ref={ref}
-        {...props}
-      >
-        <boxGeometry args={[1, 2, 1]} />
-        <pointLight position={[0, 10, 0]} color='white' />
-        <meshPhongMaterial color='red' />
-      </mesh>
-    </group>
+    <PlayerModel ref={ref} self />
   )
 }
 

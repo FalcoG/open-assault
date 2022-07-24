@@ -8,7 +8,7 @@ import styles from './scoreboard.module.scss'
 
 const Scoreboard = (): JSX.Element => {
   const [visible, setVisible] = useState(false)
-  const { players } = useContext(NetworkDataContext)
+  const { players, uuid } = useContext(NetworkDataContext)
   const { pointerLock } = useContext(GameStateContext)
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const Scoreboard = (): JSX.Element => {
           scoreboard!
           <ul>
             {players.map(player =>
-              <li key={player.uuid}>{player.username}, id: {player.uuid}</li>
+              <li key={player.uuid}>{player.username} {player.uuid === uuid && '(you)'}</li>
             )}
           </ul>
         </div>

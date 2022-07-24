@@ -1,10 +1,13 @@
 export const enum ClientPacketKeys {
   CHAT_MESSAGE = 'message',
+  PLAYER_CHARACTER_POSITION = 'playerCharacterPosition',
 }
 
 export const enum ServerPacketKeys {
   CHAT_MESSAGE = 'message',
   PLAYERS = 'players',
+  PLAYERS_UPDATE = 'playersUpdate',
+  PLAYER_IDENTIFY_SELF = 'playerIdentifySelf',
   PLAYER_JOIN = 'playerJoin',
   PLAYER_LEAVE = 'playerLeave',
 }
@@ -12,12 +15,22 @@ export const enum ServerPacketKeys {
 // packets that originate from the client
 export interface ClientPackets {
   [ClientPacketKeys.CHAT_MESSAGE]: string
+  [ClientPacketKeys.PLAYER_CHARACTER_POSITION]: [x: number, y: number, z: number]
 }
 
-interface PlayerPacket {
+interface PlayerPacketBase {
   uuid: string
+}
+
+type PlayerPacketInitial = PlayerPacketBase & {
   username: string
 }
+
+interface PlayerPacketUpdate {
+  position?: [x: number, y: number, z: number]
+}
+
+export type PlayerInfo = PlayerPacketBase & PlayerPacketInitial & PlayerPacketUpdate
 
 // packets that originate from the server
 export interface ServerPackets {
@@ -26,9 +39,13 @@ export interface ServerPackets {
     origin: string
   }
   [ServerPacketKeys.PLAYERS]: {
-    players: PlayerPacket[]
+    players: PlayerPacketInitial[]
   }
-  [ServerPacketKeys.PLAYER_JOIN]: PlayerPacket
+  [ServerPacketKeys.PLAYERS_UPDATE]: { [uuid: string]: PlayerPacketUpdate }
+  [ServerPacketKeys.PLAYER_IDENTIFY_SELF]: {
+    uuid: string
+  }
+  [ServerPacketKeys.PLAYER_JOIN]: PlayerPacketInitial
   [ServerPacketKeys.PLAYER_LEAVE]: {
     uuid: string
   }

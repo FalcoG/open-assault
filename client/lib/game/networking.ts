@@ -1,8 +1,7 @@
+import { ClientPacketKeys, ClientPackets, ServerPacketKeys, ServerPackets } from 'open-assault-core/networking'
 import React from 'react'
-import { ServerPacketKeys, ServerPackets, ClientPacketKeys, ClientPackets } from 'open-assault-core/networking'
 
 export const NetworkContext = React.createContext<{
-  uuid?: string
   ws?: WebSocket
   eventDispatch: EventTarget
 }>({ ws: undefined, eventDispatch: new EventTarget() })

@@ -10,6 +10,7 @@ import styles from './canvas.module.scss'
 import Controls from './controls'
 import TestCube from './mesh/test-cube'
 import Player from './player'
+import Players from './players'
 
 const ContextBridge: React.FunctionComponent = () => {
   const ContextBridge = useContextBridge(NetworkContext, NetworkDataContext, GameStateContext)
@@ -29,6 +30,7 @@ const ContextBridge: React.FunctionComponent = () => {
         </GizmoHelper>
         <Stats className={styles.stats} />
         <Player />
+        <Players />
         <TestCube />
         <gridHelper />
       </ContextBridge>

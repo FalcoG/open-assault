@@ -1,7 +1,8 @@
-import { WebSocket, WebSocketServer } from 'ws'
 import { EventEmitter } from 'events'
-import { ClientPacketKeys, ClientPackets, ServerPacketKeys, ServerPackets } from 'open-assault-core/networking'
 import { ClientServerEventKeys, ClientServerEvents } from 'open-assault-core/client-server-events'
+import { ClientPacketKeys, ClientPackets, ServerPacketKeys, ServerPackets } from 'open-assault-core/networking'
+import { WebSocket, WebSocketServer } from 'ws'
+
 import { createPacket } from '../lib/create-packet'
 
 interface WebSocketConnection extends WebSocket {
