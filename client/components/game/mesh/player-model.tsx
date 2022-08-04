@@ -14,7 +14,7 @@ const PlayerModel = React.forwardRef(
       <mesh>
         <boxGeometry args={[1, 2, 1]} />
         {props.self && <pointLight position={[0, 10, 0]} color='white' />}
-        <meshPhongMaterial color={props.self ? 'red' : 'purple'} />
+        <meshPhongMaterial color={props.self ? 'red' : 'purple'} {...props.self && { opacity: 0.5, transparent: true }} />
       </mesh>
     </group>
   ))
