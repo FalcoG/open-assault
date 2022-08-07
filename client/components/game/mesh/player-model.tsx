@@ -12,7 +12,8 @@ const PlayerModel = React.forwardRef(
       position={props.position}
     >
       <mesh>
-        <boxGeometry args={[1, 2, 1]} />
+        {/* <boxGeometry args={[1, 2, 1]} /> */}
+        <sphereGeometry args={[0.5]} />
         {props.self && <pointLight position={[0, 10, 0]} color='white' />}
         <meshPhongMaterial color={props.self ? 'red' : 'purple'} />
       </mesh>

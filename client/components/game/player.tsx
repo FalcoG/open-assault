@@ -87,21 +87,28 @@ const Player = (): JSX.Element => {
 
     if (!canMove) return
 
+    const velocity = new Vector3(0, 0, 0)
+
     if (walkingForwards) {
-      physicsAPI.velocity.set(0, 0, speed)
+      velocity.setX(1)
     }
 
     if (walkingBackwards) {
-      physicsAPI.velocity.set(0, 0, -speed)
+      velocity.setX(-1)
     }
 
     if (walkingLeft) {
-      physicsAPI.velocity.set(speed, 0, 0)
+      velocity.setZ(-1)
     }
 
     if (walkingRight) {
-      physicsAPI.velocity.set(-speed, 0, 0)
+      velocity.setZ(1)
     }
+
+    velocity.applyQuaternion(ref.current.quaternion)
+    velocity.multiplyScalar(speed)
+
+    physicsAPI.angularVelocity.copy(velocity)
   })
 
   /**
