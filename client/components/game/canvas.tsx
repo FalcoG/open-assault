@@ -1,3 +1,4 @@
+import { Physics } from '@react-three/cannon'
 import { GizmoHelper, GizmoViewport, Stats, useContextBridge } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import React from 'react'
@@ -8,6 +9,8 @@ import { NetworkDataContext } from '../../lib/game/network-data'
 import { NetworkContext } from '../../lib/game/networking'
 import styles from './canvas.module.scss'
 import Controls from './controls'
+import GravityCube from './mesh/gravity-cube'
+import Surface from './mesh/surface'
 import TestCube from './mesh/test-cube'
 import Player from './player'
 import Players from './players'
@@ -29,10 +32,15 @@ const ContextBridge: React.FunctionComponent = () => {
           <GizmoViewport axisColors={['red', 'green', 'blue']} labelColor='black' />
         </GizmoHelper>
         <Stats className={styles.stats} />
-        <Player />
         <Players />
         <TestCube />
         <gridHelper />
+
+        <Physics>
+          <Surface />
+          <Player />
+          <GravityCube />
+        </Physics>
       </ContextBridge>
     </Canvas>
   )

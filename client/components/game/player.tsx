@@ -1,3 +1,4 @@
+import { useSphere } from '@react-three/cannon'
 import { useFrame } from '@react-three/fiber'
 import { ClientPacketKeys } from 'open-assault-core/networking'
 import React, { useContext, useEffect, useRef, useState } from 'react'
@@ -18,6 +19,12 @@ const Player = (): JSX.Element => {
   const [sprinting, setSprinting] = useState(false)
   const { pointerLock } = useContext(GameStateContext)
   const { ws } = useContext(NetworkContext)
+  const [physicsRef, physicsAPI] = useSphere(() => ({
+    mass: 1,
+    args: [0.5],
+    position: [0, 2, 0],
+    fixedRotation: true
+  }))
 
   useEffect(() => {
     const keyDownHandler = (e): void => {
@@ -68,33 +75,47 @@ const Player = (): JSX.Element => {
     }
   })
 
+  useEffect(() => {
+    physicsAPI.position.subscribe((v) => {
+      ref.current?.position.set(...v)
+    })
+  }, [ref.current])
+
   useFrame((state, delta) => {
-    const canMove = ref.current != null && pointerLock
-    const speed = sprinting ? 2 : 1
+    const canMove = ref.current != null && physicsRef.current != null && pointerLock
+    const speed = sprinting ? 8 : 5
 
     if (!canMove) return
+
+    if (walkingForwards) {
+      physicsAPI.velocity.set(0, 0, speed)
+    }
+
+    if (walkingBackwards) {
+      physicsAPI.velocity.set(0, 0, -speed)
+    }
+
+    if (walkingLeft) {
+      physicsAPI.velocity.set(speed, 0, 0)
+    }
+
+    if (walkingRight) {
+      physicsAPI.velocity.set(-speed, 0, 0)
+    }
+  })
+
+  /**
+   * Camera updater
+   */
+  useFrame((state, delta) => {
+    const canUpdate = ref.current != null && physicsRef.current != null
+
+    if (!canUpdate) return
 
     const rotationalVec = new Vector3()
     state.camera.getWorldDirection(rotationalVec) // this vector is relative to the camera itself
     rotationalVec.y = 0
     ref.current.lookAt(rotationalVec.clone().add(ref.current.position)) // make the vector absolute to the world
-
-    // no else ifs for movement, users may press all keys at the same time!
-    if (walkingForwards) {
-      ref.current.translateZ(speed * delta)
-    }
-
-    if (walkingBackwards) {
-      ref.current.translateZ(-speed * delta)
-    }
-
-    if (walkingLeft) {
-      ref.current.translateX(speed * delta)
-    }
-
-    if (walkingRight) {
-      ref.current.translateX(-speed * delta)
-    }
 
     const cameraPosition = ref.current.position.clone()
     cameraPosition.sub(rotationalVec)
